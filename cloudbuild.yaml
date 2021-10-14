@@ -1,0 +1,6 @@
+steps:
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    args:
+      - --destination=gcr.io/$PROJECT_ID/xerox:$BRANCH_NAME
+      - --destination=gcr.io/$PROJECT_ID/xerox:$COMMIT_SHA
+      - --cache=true
