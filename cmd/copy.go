@@ -12,9 +12,9 @@ import (
 	"google.golang.org/api/option"
 )
 
-var downloadCmd = &cobra.Command{
-	Use:   "download",
-	Short: "will download a file from GCS",
+var copyCmd = &cobra.Command{
+	Use:   "copy",
+	Short: "copies (get it?) a file from GCS bucket to your local machine",
 	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := creds()
@@ -22,7 +22,7 @@ var downloadCmd = &cobra.Command{
 			return err
 		}
 
-		return RetrieveInputFile(context.Background(), filename, c, bucketName)
+		return CopyFileFromBucket(context.Background(), filename, c, bucketName)
 	},
 }
 
@@ -32,9 +32,9 @@ var (
 )
 
 func init() {
-	downloadCmd.Flags().StringVarP(&filename, "file", "f", "", "filename on the GCS bucket")
-	downloadCmd.Flags().StringVarP(&bucketName, "bucket", "b", "", "bucket name on the GCS")
-	rootCmd.AddCommand(downloadCmd)
+	copyCmd.Flags().StringVarP(&filename, "file", "f", "", "filename on the GCS bucket")
+	copyCmd.Flags().StringVarP(&bucketName, "bucket", "b", "", "bucket name on the GCS")
+	rootCmd.AddCommand(copyCmd)
 }
 
 func creds() ([]byte, error) {
@@ -50,7 +50,7 @@ func creds() ([]byte, error) {
 	return decoded, nil
 }
 
-func RetrieveInputFile(ctx context.Context, filename string, creds []byte, bucketName string) error {
+func CopyFileFromBucket(ctx context.Context, filename string, creds []byte, bucketName string) error {
 	var client *storage.Client
 	var err error
 
