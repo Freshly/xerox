@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 	"google.golang.org/api/option"
 )
@@ -80,14 +82,16 @@ func copyFileFromBucket(ctx context.Context, filename string, bucketName string,
 	if err != nil {
 		return err
 	}
-	fmt.Println(attributes.Size/1024, "kB to download")
 
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Downloading...")
+	fmt.Println(attributes.Size/1024, "kB to download")
+	s := spinner.New(spinner.CharSets[11], 100*time.Millisecond, spinner.WithWriter(os.Stderr))
+	s.Suffix = " Downloading..."
+	s.Start()
 	_, err = io.Copy(file, reader)
 	if err != nil {
 		return err
