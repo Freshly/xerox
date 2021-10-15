@@ -88,7 +88,7 @@ func copyFileFromBucket(ctx context.Context, filename string, bucketName string,
 		return err
 	}
 
-	fmt.Println(attributes.Size/1024, "kB to download")
+	fmt.Println(attributes.Size/1000, "KB to download")
 	s := spinner.New(spinner.CharSets[11], 100*time.Millisecond, spinner.WithWriter(os.Stderr))
 	s.Suffix = " Downloading..."
 	s.Start()
