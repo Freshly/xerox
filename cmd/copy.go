@@ -13,16 +13,17 @@ import (
 )
 
 var copyCmd = &cobra.Command{
-	Use:   "copy",
-	Short: "copies (get it?) a file from GCS bucket to your local machine",
-	Long:  ``,
+	Use: "copy",
+	Short: `Copies (xerox is a copy machine, get it?) a file from GCS bucket to your local machine.
+Set XEROX_CREDS_BASE64 env to configure the credentials for your project.
+By default, your current gcloud profile will be used for authentication.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := creds()
 		if err != nil {
 			return err
 		}
 
-		return CopyFileFromBucket(context.Background(), filename, c, bucketName)
+		return copyFileFromBucket(context.Background(), filename, bucketName, c)
 	},
 }
 
@@ -50,7 +51,7 @@ func creds() ([]byte, error) {
 	return decoded, nil
 }
 
-func CopyFileFromBucket(ctx context.Context, filename string, creds []byte, bucketName string) error {
+func copyFileFromBucket(ctx context.Context, filename string, bucketName string, creds []byte) error {
 	var client *storage.Client
 	var err error
 
@@ -68,22 +69,30 @@ func CopyFileFromBucket(ctx context.Context, filename string, creds []byte, buck
 	defer client.Close()
 
 	bucket := client.Bucket(bucketName)
-	objecthandler := bucket.Object(filename)
-	reader, err := objecthandler.NewReader(ctx)
+	objectHandler := bucket.Object(filename)
+	reader, err := objectHandler.NewReader(ctx)
 	if err != nil {
 		return err
 	}
 	defer reader.Close()
+
+	attributes, err := objectHandler.Attrs(ctx)
+	if err != nil {
+		return err
+	}
+	fmt.Println(attributes.Size/1024, "kB to download")
 
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("Downloading...")
 	_, err = io.Copy(file, reader)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("Done!")
 	return nil
 }
