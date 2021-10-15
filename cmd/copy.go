@@ -15,8 +15,9 @@ import (
 )
 
 var copyCmd = &cobra.Command{
-	Use: "copy",
-	Short: `Copies (xerox is a copy machine, get it?) a file from GCS bucket to your local machine.
+	Use:   "copy",
+	Short: "Copies (xerox is a copy machine, get it?) a file from GCS bucket to your local machine.",
+	Long: `Copies (xerox is a copy machine, get it?) a file from GCS bucket to your local machine.
 Set XEROX_CREDS_BASE64 env to configure the credentials for your project.
 By default, your current gcloud profile will be used for authentication.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
