@@ -94,11 +94,12 @@ func copyFileFromBucket(ctx context.Context, filename string, bucketName string,
 	s.Suffix = " Downloading..."
 	s.FinalMSG = "\nDone!\n"
 	s.Start()
+	defer s.Stop()
+
 	_, err = io.Copy(file, reader)
 	if err != nil {
 		return err
 	}
-	s.Stop()
 
 	return nil
 }
